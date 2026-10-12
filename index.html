@@ -1,631 +1,561 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panama Canal Cruise Tracker - Family Adventure</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: #0b132b;
-            color: #f1f5f9;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background-color: #1c2541;
-            border-bottom: 1px solid #3a506b;
-            padding: 16px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .ship-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
-        }
-
-        .brand h1 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .brand p {
-            font-size: 0.75rem;
-            color: #48cae4;
-        }
-
-        .status-badge {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        main {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 24px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .banner {
-            background: linear-gradient(135deg, #1c2541, #0b132b);
-            border: 1px solid #3a506b;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .banner-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .banner h2 {
-            font-size: 1.6rem;
-            color: #ffffff;
-            margin-top: 4px;
-        }
-
-        .banner p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        .progress-box {
-            background: #0b132b;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid #3a506b;
-            min-width: 240px;
-        }
-
-        .progress-bar-bg {
-            background: #1e293b;
-            height: 10px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #00b4d8, #48cae4);
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        .timeline {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-top: 16px;
-            margin-top: 16px;
-            border-top: 1px solid #1e293b;
-            padding-bottom: 8px;
-        }
-
-        .timeline-btn {
-            background: #0b132b;
-            border: 1px solid #3a506b;
-            color: #cbd5e1;
-            padding: 8px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            text-align: center;
-            min-width: 75px;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-        }
-
-        .timeline-btn.active {
-            background: #00b4d8;
-            color: #0b132b;
-            border-color: #48cae4;
-            font-weight: 700;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        @media (max-width: 900px) {
-            .grid {
-                grid-template-columns: 1fr;
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
             }
         }
-
-        .card {
-            background: #1c2541;
-            border: 1px solid #3a506b;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
         }
-
-        .card-img-container {
-            position: relative;
-            height: 200px;
-            width: 100%;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-
-        .card-img-placeholder {
-            text-align: center;
-            color: #64748b;
-        }
-
-        .badge-container {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .tag {
-            background: #f59e0b;
-            color: #0b132b;
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
-            text-transform: uppercase;
-        }
-
-        .flag-tag {
-            background: rgba(11, 19, 43, 0.85);
-            color: #ffffff;
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid #3a506b;
-        }
-
-        .img-overlay {
-            position: absolute;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-        }
-
-        .img-overlay h3 {
-            font-size: 1.75rem;
-            color: #ffffff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-
-        .meta-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 16px;
-            background: rgba(11, 19, 43, 0.6);
-            border-bottom: 1px solid #3a506b;
-            text-align: center;
-        }
-
-        .meta-item span:first-child {
-            display: block;
-            font-size: 0.65rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-        }
-
-        .meta-item span:last-child {
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #00b4d8;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .card-body h4 {
-            font-size: 0.85rem;
-            color: #00b4d8;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .activity-text {
-            color: #e2e8f0;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        .tidbits-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .tidbits-list li {
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .tidbits-list li::before {
-            content: "✓";
-            color: #00b4d8;
-            font-weight: bold;
-        }
-
-        .nav-controls {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .btn {
-            background: #1c2541;
-            border: 1px solid #3a506b;
-            color: #ffffff;
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            flex: 1;
-            transition: background 0.2s ease;
-        }
-
-        .btn:hover {
-            background: #3a506b;
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .weather-card, .map-card {
-            padding: 20px;
-        }
-
-        .weather-temp {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .weather-cond {
-            color: #48cae4;
-            font-weight: 600;
-        }
-
-        .weather-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 16px;
-            text-align: center;
-        }
-
-        .weather-box {
-            background: #0b132b;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #3a506b;
-        }
-
-        .weather-box span {
-            display: block;
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
-
-        .weather-box strong {
-            font-size: 0.85rem;
-            color: #ffffff;
-        }
-
-        footer {
-            background: #1c2541;
-            border-top: 1px solid #3a506b;
-            text-align: center;
-            padding: 16px;
-            font-size: 0.75rem;
-            color: #64748b;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
         }
     </style>
 </head>
-<body>
+<body class="h-full font-sans antialiased bg-slate-950 text-slate-100 flex flex-col min-h-screen">
 
-    <header>
-        <div class="header-container">
-            <div class="brand">
-                <div class="ship-icon">🚢</div>
-                <div>
-                    <h1>Panama Canal Tracker</h1>
-                    <p>Norwegian Cruise Line • 16-Day Voyage</p>
+    <!-- Navigation Header -->
+    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-ship text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-serif font-bold text-lg sm:text-xl text-white leading-tight">Panama Canal Tracker</h1>
+                        <p class="text-xs text-cyan-400 font-medium">Norwegian Cruise Line • 16-Day Voyage</p>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+                        Status: <span id="headerStatusText" class="ml-1">Pre-Cruise Day (LA)</span>
+                    </span>
+                    <button onclick="jumpToToday()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-day text-cyan-400"></i>
+                        <span>Jump to Today</span>
+                    </button>
                 </div>
             </div>
-            <div class="status-badge" id="statusBadge">Pre-Cruise Day (Los Angeles)</div>
         </div>
     </header>
 
-    <main>
-        <div class="banner">
-            <div class="banner-top">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Banner / Quick Date Selector -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                    <span style="color: #48cae4; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Voyage Progress</span>
-                    <h2 id="heroTitle">Pre-Cruise Arrival Day</h2>
-                    <p id="heroSub">Parents arrive in Los Angeles, preparing for tomorrow's embarkation!</p>
-                </div>
-                <div class="progress-box">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                        <span style="color: #94a3b8;">Cruise Completion</span>
-                        <strong style="color: #00b4d8;" id="progressPct">0%</strong>
+                    <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-compass"></i> Voyage Progress
                     </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="progressBar"></div>
+                    <h2 id="heroTitle" class="text-2xl sm:text-3xl font-serif font-bold text-white">Pre-Cruise Arrival Day</h2>
+                    <p id="heroSub" class="text-slate-400 text-sm mt-1">Parents arrive in Los Angeles, preparing for tomorrow's embarkation!</p>
+                </div>
+
+                <div class="w-full lg:w-72 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <div class="flex justify-between text-xs font-medium mb-1.5">
+                        <span class="text-slate-400">Cruise Completion</span>
+                        <span id="progressText" class="text-cyan-400 font-bold">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="timeline" id="timeline"></div>
+            <!-- Timeline Scrollbar -->
+            <div class="mt-6 pt-4 border-t border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Select Voyage Day:</span>
+                    <span class="text-xs text-slate-400 font-mono" id="selectedDateDisplay">Mon, Oct 12</span>
+                </div>
+                <div id="timelineContainer" class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar"></div>
+            </div>
         </div>
 
-        <div class="grid">
-            <div>
-                <div class="card">
-                    <div class="card-img-container">
-                        <div class="card-img-placeholder">
-                            <div style="font-size: 3rem;" id="portEmoji">🏨</div>
-                            <div style="font-size: 0.85rem; margin-top: 4px;" id="portLocationSub">Los Angeles, California</div>
+        <!-- ACTIVE DAY DETAILS DISPLAY -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Left Column: Details, Image, Activities -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                    <!-- Hero Image Banner with Fallback -->
+                    <div class="relative h-64 sm:h-80 w-full bg-slate-950 overflow-hidden">
+                        <img id="dayImage" src="" alt="Port Photo" class="w-full h-full object-cover transition-all duration-500" onError="this.onerror=null;this.src='https://images.unsplash.com/photo-1548574505-5e238690323f?w=800';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                            <span id="dayBadge" class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 uppercase tracking-wider shadow-md">
+                                PRE-CRUISE
+                            </span>
+                            <span id="flagBadge" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-900/80 backdrop-blur text-slate-200 border border-slate-700/50 flex items-center gap-1.5 shadow-md">
+                                🇺🇸 United States
+                            </span>
                         </div>
-                        <div class="badge-container">
-                            <span class="tag" id="dayTag">PRE-CRUISE</span>
-                            <span class="flag-tag" id="flagTag">🇺🇸 United States</span>
-                        </div>
-                        <div class="img-overlay">
-                            <h3 id="portName">Los Angeles, California</h3>
-                            <p style="color: #cbd5e1; font-size: 0.85rem;" id="portDate">Monday, October 12, 2026</p>
+
+                        <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                            <div>
+                                <h3 id="portName" class="text-2xl sm:text-3xl font-serif font-bold text-white tracking-wide">Los Angeles, California</h3>
+                                <p id="portDate" class="text-slate-300 text-sm flex items-center gap-2 mt-0.5">
+                                    <i class="fa-regular fa-calendar text-cyan-400"></i> Monday, October 12, 2026
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="meta-grid">
-                        <div class="meta-item">
-                            <span>Arrival</span>
-                            <span id="arriveTime">Pre-Arrival</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-900/90 border-b border-slate-800/80 text-center text-xs">
+                        <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
+                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Arrival</span>
+                            <span id="arriveTime" class="font-bold text-slate-200 text-sm">Pre-Arrival</span>
                         </div>
-                        <div class="meta-item">
-                            <span>Departure</span>
-                            <span id="departTime">Overnight</span>
+                        <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
+                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Departure</span>
+                            <span id="departTime" class="font-bold text-amber-400 text-sm">--</span>
                         </div>
-                        <div class="meta-item">
-                            <span>Time Zone</span>
-                            <span id="tzText">PDT (UTC-7)</span>
+                        <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
+                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Time Zone</span>
+                            <span id="timeZoneText" class="font-bold text-cyan-400 text-sm">PDT (UTC-7)</span>
                         </div>
-                        <div class="meta-item">
-                            <span>Type</span>
-                            <span id="typeText">Hotel / Port</span>
+                        <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
+                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Port / Sea</span>
+                            <span id="typeText" class="font-bold text-emerald-400 text-sm">Hotel / Port</span>
                         </div>
                     </div>
 
-                    <div class="card-body">
-                        <h4>What Parents Are Doing Today</h4>
-                        <p class="activity-text" id="activityText">Parents arrive in Los Angeles! Today is all about getting settled, resting up, and preparing for embarkation tomorrow.</p>
+                    <div class="p-5 sm:p-6 space-y-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-map-location-dot"></i> What Parents Are Doing Today
+                            </h4>
+                            <p id="activityText" class="text-slate-300 text-sm sm:text-base leading-relaxed mt-2">
+                                Pre-Cruise Arrival in Los Angeles! Preparing to board the vessel tomorrow.
+                            </p>
+                        </div>
 
-                        <h4 style="color: #f59e0b; margin-top: 20px;">Port Tidbits & Fun Facts</h4>
-                        <ul class="tidbits-list" id="tidbitsList"></ul>
+                        <div class="pt-4 border-t border-slate-800">
+                            <h4 class="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-lightbulb"></i> Port Tidbits & Fun Facts
+                            </h4>
+                            <ul id="tidbitsList" class="space-y-2.5 text-sm text-slate-300"></ul>
+                        </div>
                     </div>
                 </div>
 
-                <div class="nav-controls">
-                    <button class="btn" id="prevBtn" onclick="navigateDay(-1)">← Previous Day</button>
-                    <button class="btn" style="flex: 0.5; background: #3a506b;" onclick="jumpToToday()">Today</button>
-                    <button class="btn" id="nextBtn" onclick="navigateDay(1)">Next Day →</button>
+                <div class="flex items-center justify-between gap-4">
+                    <button id="prevBtn" onclick="navigateDay(-1)" class="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-cyan-400"></i>
+                        <span>Previous Day</span>
+                    </button>
+
+                    <button onclick="jumpToToday()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 font-bold text-xs transition uppercase tracking-wider">
+                        Today
+                    </button>
+
+                    <button id="nextBtn" onclick="navigateDay(1)" class="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span>Next Day</span>
+                        <i class="fa-solid fa-chevron-right text-cyan-400"></i>
+                    </button>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 24px;">
-                <div class="card weather-card">
-                    <h3 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 12px; border-bottom: 1px solid #3a506b; padding-bottom: 8px;">Port Weather</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div class="weather-temp" id="weatherTemp">72°F</div>
-                            <div class="weather-cond" id="weatherCond">Sunny & Pleasant</div>
-                        </div>
-                        <div style="font-size: 2.5rem;">☀️</div>
+            <!-- Right Column: Weather & Map Widget -->
+            <div class="space-y-6">
+                <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 class="font-serif font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-sun text-amber-400"></i> Port Weather
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">Destination Forecast</span>
                     </div>
-                    <div class="weather-details">
-                        <div class="weather-box">
-                            <span>HUMIDITY</span>
-                            <strong id="humidityText">52%</strong>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <div id="weatherTemp" class="text-3xl font-extrabold text-white">72°F</div>
+                            <div id="weatherCond" class="text-sm font-medium text-cyan-400 mt-0.5">Sunny & Clear</div>
                         </div>
-                        <div class="weather-box">
-                            <span>WIND SPEED</span>
-                            <strong id="windText">8 mph</strong>
+                        <div id="weatherIconContainer" class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-3xl">
+                            <i class="fa-solid fa-sun"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs pt-2">
+                        <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-400 block">Humidity</span>
+                            <span id="humidityText" class="font-bold text-slate-200">55%</span>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-400 block">Wind Speed</span>
+                            <span id="windText" class="font-bold text-slate-200">9 mph</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="card map-card">
-                    <h3 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 12px; border-bottom: 1px solid #3a506b; padding-bottom: 8px;">Route Map</h3>
-                    <svg viewBox="0 0 500 300" style="width: 100%; height: auto; background: #0b132b; border-radius: 8px; border: 1px solid #3a506b;">
-                        <path d="M 50,60 Q 110,80 150,130 T 220,180 T 310,240 T 380,210 T 430,170 T 460,90" fill="none" stroke="#00b4d8" stroke-width="3" stroke-dasharray="5,5" />
-                        <circle cx="50" cy="60" r="6" fill="#00b4d8"/><text x="50" y="45" fill="#ffffff" font-size="9" text-anchor="middle">LA</text>
-                        <circle cx="110" cy="95" r="5" fill="#00b4d8"/>
-                        <circle cx="160" cy="140" r="5" fill="#00b4d8"/>
-                        <circle cx="210" cy="175" r="5" fill="#00b4d8"/>
-                        <circle cx="260" cy="210" r="5" fill="#00b4d8"/>
-                        <circle cx="310" cy="240" r="7" fill="#f59e0b"/><text x="310" y="258" fill="#f59e0b" font-size="9" text-anchor="middle">Panama</text>
-                        <circle cx="380" cy="210" r="5" fill="#00b4d8"/>
-                        <circle cx="410" cy="150" r="5" fill="#00b4d8"/>
-                        <circle cx="460" cy="90" r="6" fill="#10b981"/><text x="460" y="75" fill="#ffffff" font-size="9" text-anchor="middle">Miami</text>
-                        <g id="activePin" transform="translate(50, 60)">
-                            <circle r="8" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
-                        </g>
-                    </svg>
+                <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 class="font-serif font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-route text-cyan-400"></i> Voyage Route Map
+                        </h3>
+                        <span class="text-xs text-cyan-400 font-mono">LA ➔ Miami</span>
+                    </div>
+
+                    <div class="relative bg-slate-950 rounded-xl border border-slate-800 p-4 overflow-hidden">
+                        <svg viewBox="0 0 500 320" class="w-full h-auto drop-shadow-md">
+                            <path d="M 30,40 Q 120,60 180,140 T 320,240 T 420,180 T 470,100" fill="none" stroke="#1e293b" stroke-width="24" stroke-linecap="round" />
+                            <path id="routeLine" d="M 50,60 Q 110,80 150,130 T 220,180 T 310,240 T 380,210 T 430,170 T 460,90" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="6,6" />
+
+                            <circle cx="50" cy="60" r="7" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(0)"/>
+                            <text x="50" y="45" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="bold">LA</text>
+
+                            <circle cx="110" cy="95" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(3)"/>
+                            <text x="110" y="112" fill="#94a3b8" font-size="9" text-anchor="middle">Cabo</text>
+
+                            <circle cx="160" cy="140" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(5)"/>
+                            <circle cx="210" cy="175" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(7)"/>
+                            <circle cx="260" cy="210" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(9)"/>
+
+                            <circle cx="310" cy="240" r="8" fill="#f59e0b" class="cursor-pointer" onclick="selectDayByIndex(11)"/>
+                            <text x="310" y="260" fill="#f59e0b" font-size="10" text-anchor="middle" font-weight="bold">Panama</text>
+
+                            <circle cx="380" cy="210" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(13)"/>
+                            <circle cx="410" cy="150" r="6" fill="#06b6d4" class="cursor-pointer" onclick="selectDayByIndex(15)"/>
+
+                            <circle cx="460" cy="90" r="7" fill="#10b981" class="cursor-pointer" onclick="selectDayByIndex(17)"/>
+                            <text x="460" y="75" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="bold">Miami</text>
+
+                            <g id="activePinG" transform="translate(50, 60)">
+                                <circle r="12" fill="#f59e0b" fill-opacity="0.3" class="animate-ping" />
+                                <circle r="6" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
+                            </g>
+                        </svg>
+
+                        <div class="mt-2 flex justify-between text-[11px] text-slate-400 border-t border-slate-800 pt-2">
+                            <span>Pacific Ocean</span>
+                            <span>Panama Canal</span>
+                            <span>Caribbean</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>
 
-    <footer>
-        Panama Canal Family Cruise Tracker • Created for tracking family adventures (Oct 13 - Oct 29, 2026)
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+            <p class="font-medium text-slate-400">Panama Canal Family Cruise Tracker • Norwegian Cruise Line Voyage</p>
+            <p>Created with ❤️ for tracking family adventures from Los Angeles to Miami (Oct 13 - Oct 29, 2026)</p>
+        </div>
     </footer>
 
     <script>
         const itinerary = [
-            { index: 0, dayNumber: 0, dateStr: "Mon, Oct 12, 2026", title: "Pre-Cruise Arrival Day", location: "Los Angeles, California", country: "United States", flag: "🇺🇸", arrive: "Pre-Arrival", depart: "Overnight", timezone: "PDT (UTC-7)", portType: "Hotel / Port", isAtSea: false, emoji: "🏨", activity: "Parents arrive in Los Angeles! Today is all about getting settled, resting up, and preparing for embarkation tomorrow.", tidbits: ["Port of Los Angeles in San Pedro is America's leading seaport.", "The historic Battleship USS Iowa is permanently moored near the terminal.", "Cruises heading through the Panama Canal take around 16 days to reach Florida."], weather: { temp: "72°F", cond: "Sunny & Pleasant", humidity: "52%", wind: "8 mph" }, mapCoords: { x: 50, y: 60 } },
-            { index: 1, dayNumber: 1, dateStr: "Tue, Oct 13, 2026", title: "Day 1: Embarkation & Sailaway", location: "Los Angeles, California", country: "United States", flag: "🇺🇸", arrive: "Check-in Morning", depart: "4:00 PM", timezone: "PDT (UTC-7)", portType: "Embarkation Port", isAtSea: false, emoji: "🚢", activity: "Official Embarkation Day! Parents board the Norwegian vessel at San Pedro terminal and set sail at 4:00 PM.", tidbits: ["Boarding begins midday with safety drills.", "Sailaway passes the Vincent Thomas Suspension Bridge.", "Top deck sailaway party with live music."], weather: { temp: "70°F", cond: "Clear & Breezy", humidity: "58%", wind: "12 mph" }, mapCoords: { x: 50, y: 60 } },
-            { index: 2, dayNumber: 2, dateStr: "Wed, Oct 14, 2026", title: "Day 2: At Sea", location: "Pacific Ocean (Cruising South)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "PDT (UTC-7)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "First full day at sea! Parents relax by the pool and enjoy ocean views along Baja California.", tidbits: ["Time to explore ship lounges, spa, and theaters.", "Waters off Baja are frequented by humpback whales and sea turtles.", "Cruising speed is around 18-21 knots."], weather: { temp: "75°F", cond: "Sunny Skies", humidity: "62%", wind: "14 mph" }, mapCoords: { x: 80, y: 78 } },
-            { index: 3, dayNumber: 3, dateStr: "Thu, Oct 15, 2026", title: "Day 3: Cabo San Lucas", location: "Cabo San Lucas, Mexico", country: "Mexico", flag: "🇲🇽", arrive: "11:30 AM", depart: "7:00 PM", timezone: "MDT (UTC-6)", portType: "Tender Port", isAtSea: false, emoji: "🌵", activity: "Docking in Cabo! Tender boats take passengers ashore to see El Arco and enjoy coastal sights.", tidbits: ["El Arco is a 200-foot granite rock formation.", "Cabo was a quiet fishing village before becoming a famous resort hub.", "Passengers ride tender water taxis ashore."], weather: { temp: "86°F", cond: "Hot & Sunny", humidity: "65%", wind: "9 mph" }, mapCoords: { x: 110, y: 95 } },
-            { index: 4, dayNumber: 4, dateStr: "Fri, Oct 16, 2026", title: "Day 4: At Sea", location: "Pacific Ocean (Mexican Riviera)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Relaxing day at sea sailing along southern Mexico with live theater and specialty dining.", tidbits: ["Enters warmer tropical ocean currents.", "Ships produce fresh water using desalination.", "Sunsets over the Pacific are a major highlight."], weather: { temp: "84°F", cond: "Partly Cloudy", humidity: "70%", wind: "11 mph" }, mapCoords: { x: 135, y: 118 } },
-            { index: 5, dayNumber: 5, dateStr: "Sat, Oct 17, 2026", title: "Day 5: Acapulco", location: "Acapulco, Mexico", country: "Mexico", flag: "🇲🇽", arrive: "7:30 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false, emoji: "🏖️", activity: "Visiting Acapulco! Watching the famous La Quebrada cliff divers leap into narrow coves.", tidbits: ["La Quebrada cliff divers have performed since 1934.", "Fort San Diego was built in 1616 to protect against pirates.", "Famous Hollywood getaway in the 1950s."], weather: { temp: "88°F", cond: "Tropical Heat", humidity: "75%", wind: "7 mph" }, mapCoords: { x: 160, y: 140 } },
-            { index: 6, dayNumber: 6, dateStr: "Sun, Oct 18, 2026", title: "Day 6: At Sea", location: "Pacific Ocean (Tehuantepec)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Cruising south across Central America with Panama Canal preview talks on board.", tidbits: ["Known for strong offshore winds across land gaps.", "Canal preview talks are held on deck and in theaters.", "Broadway-style revues in the main theater."], weather: { temp: "85°F", cond: "Warm & Tropical", humidity: "72%", wind: "15 mph" }, mapCoords: { x: 185, y: 158 } },
-            { index: 7, dayNumber: 7, dateStr: "Mon, Oct 19, 2026", title: "Day 7: Puerto Quetzal", location: "Puerto Quetzal, Guatemala", country: "Guatemala", flag: "🇬🇹", arrive: "7:00 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false, emoji: "🌋", activity: "Arrival in Guatemala! Excursions head inland to colonial Antigua and volcano views.", tidbits: ["Antigua is surrounded by three towering volcanoes.", "Guatemalan coffee is grown in rich volcanic soil.", "Puerto Quetzal is Guatemala's primary Pacific gateway."], weather: { temp: "83°F", cond: "Humid & Sun", humidity: "78%", wind: "8 mph" }, mapCoords: { x: 210, y: 175 } },
-            { index: 8, dayNumber: 8, dateStr: "Tue, Oct 20, 2026", title: "Day 8: At Sea", location: "Pacific Ocean (Central America)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Halfway point of the voyage! Relaxing poolside as the ship skirts El Salvador and Nicaragua.", tidbits: ["Halfway point often features gala night celebrations.", "Bioluminescent plankton sometimes glows at night in wake.", "Crew members represent over 50 nations."], weather: { temp: "86°F", cond: "Sunny with Clouds", humidity: "74%", wind: "10 mph" }, mapCoords: { x: 235, y: 192 } },
-            { index: 9, dayNumber: 9, dateStr: "Wed, Oct 21, 2026", title: "Day 9: Puntarenas", location: "Puntarenas, Costa Rica", country: "Costa Rica", flag: "🇨🇷", arrive: "7:00 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false, emoji: "🦜", activity: "Eco-adventures in Costa Rica! Cloud forest canopy tours and crocodile river safaris.", tidbits: ["Costa Rica holds nearly 6% of world biodiversity.", "Tarcoles River has one of the highest crocodile concentrations.", "'Pura Vida' is the national motto."], weather: { temp: "84°F", cond: "Tropical Humid", humidity: "82%", wind: "6 mph" }, mapCoords: { x: 260, y: 210 } },
-            { index: 10, dayNumber: 10, dateStr: "Thu, Oct 22, 2026", title: "Day 10: At Sea", location: "Gulf of Panama", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EST (UTC-5)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Preparing for the Panama Canal transit tomorrow with detailed historical presentations.", tidbits: ["Time zone shifts to Eastern Standard Time (EST).", "Ship coordinates exact transit timing with canal pilots.", "Over 13,000 ships transit the canal annually."], weather: { temp: "87°F", cond: "Warm Breeze", humidity: "76%", wind: "11 mph" }, mapCoords: { x: 285, y: 225 } },
-            { index: 11, dayNumber: 11, dateStr: "Fri, Oct 23, 2026", title: "Day 11: Panama City", location: "Panama City, Panama", country: "Panama", flag: "🇵🇦", arrive: "7:00 AM", depart: "9:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false, emoji: "🏙️", activity: "Docked at Panama City! Touring Casco Viejo old town and Amador Causeway.", tidbits: ["Only capital with a tropical rainforest inside city limits.", "Casco Viejo features French and Spanish colonial architecture.", "Bridge of the Americas spans the Pacific entrance."], weather: { temp: "88°F", cond: "Partly Cloudy", humidity: "80%", wind: "7 mph" }, mapCoords: { x: 310, y: 240 } },
-            { index: 12, dayNumber: 12, dateStr: "Sat, Oct 24, 2026", title: "Day 12: Panama Canal Transit", location: "Panama Canal Locks", country: "Panama", flag: "🇵🇦", arrive: "Early AM", depart: "Late PM", timezone: "EST (UTC-5)", portType: "Canal Transit", isAtSea: false, emoji: "⚙️", activity: "CROWN JEWEL DAY! All-day daylight transit through the locks of the Panama Canal into the Caribbean.", tidbits: ["Lifts ships 85 feet above sea level using gravity water.", "Electric 'mule' locomotives guide vessels in locks.", "Takes 52 million gallons of fresh water per transit."], weather: { temp: "86°F", cond: "Tropical Sunshine", humidity: "85%", wind: "5 mph" }, mapCoords: { x: 340, y: 230 } },
-            { index: 13, dayNumber: 13, dateStr: "Sun, Oct 25, 2026", title: "Day 13: Cartagena", location: "Cartagena, Colombia", country: "Colombia", flag: "🇨🇴", arrive: "10:15 AM", depart: "6:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false, emoji: "🏰", activity: "Docking in Cartagena, Colombia! Exploring the vibrant Walled City and colonial fortresses.", tidbits: ["Old City wall is 8 miles long and took 200 years to build.", "Castillo San Felipe is the largest Spanish fort in South America.", "Port terminal features an open-air wildlife garden."], weather: { temp: "87°F", cond: "Caribbean Sun", humidity: "78%", wind: "10 mph" }, mapCoords: { x: 380, y: 210 } },
-            { index: 14, dayNumber: 14, dateStr: "Mon, Oct 26, 2026", title: "Day 14: At Sea", location: "Caribbean Sea", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EST (UTC-5)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Cruising turquoise Caribbean waters towards Jamaica with deck parties and comedy shows.", tidbits: ["Caribbean Sea reaches depths over 22,000 feet.", "Flying fish are frequently spotted alongside.", "Caribbean jerk specialties featured at lunch."], weather: { temp: "85°F", cond: "Sunny Breeze", humidity: "72%", wind: "12 mph" }, mapCoords: { x: 395, y: 180 } },
-            { index: 15, dayNumber: 15, dateStr: "Tue, Oct 27, 2026", title: "Day 15: Falmouth", location: "Falmouth, Jamaica", country: "Jamaica", flag: "🇯🇲", arrive: "7:00 AM", depart: "3:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false, emoji: "🌴", activity: "Visiting Jamaica! Touring historic Georgian architecture and Dunn's River Falls.", tidbits: ["Falmouth features well-preserved 19th-century Georgian buildings.", "First commercial banana producer in Western Hemisphere.", "Authentic jerk chicken made with local spices."], weather: { temp: "86°F", cond: "Tropical Sunshine", humidity: "76%", wind: "9 mph" }, mapCoords: { x: 410, y: 150 } },
-            { index: 16, dayNumber: 16, dateStr: "Wed, Oct 28, 2026", title: "Day 16: At Sea", location: "Straits of Florida", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EDT (UTC-4)", portType: "Cruising Day", isAtSea: true, emoji: "🌊", activity: "Final sea day! Packing bags, farewell dinners, and watching sunset over the Gulf Stream.", tidbits: ["Luggage is put outside staterooms by midnight.", "Gulf Stream current speeds northbound ships toward Florida.", "Final debarkation tags distributed."], weather: { temp: "81°F", cond: "Clear Coastal Sky", humidity: "68%", wind: "13 mph" }, mapCoords: { x: 435, y: 120 } },
-            { index: 17, dayNumber: 17, dateStr: "Thu, Oct 29, 2026", title: "Disembarkation Day", location: "Miami, Florida", country: "United States", flag: "🇺🇸", arrive: "8:00 AM", depart: "Debark", timezone: "EDT (UTC-4)", portType: "Disembark Port", isAtSea: false, emoji: "🌴", activity: "Arrival at PortMiami! Clearing customs and heading home after an incredible voyage.", tidbits: ["PortMiami is the 'Cruise Capital of the World'.", "Famous South Beach Art Deco district is 10 minutes away.", "Total journey spans over 4,500 nautical miles!"], weather: { temp: "80°F", cond: "Sunny Florida Morning", humidity: "65%", wind: "10 mph" }, mapCoords: { x: 460, y: 90 } }
+            {
+                index: 0, dayNumber: 0, dateStr: "Mon, Oct 12, 2026", title: "Pre-Cruise Arrival Day", location: "Los Angeles, California", country: "United States", flag: "🇺🇸", arrive: "Pre-Arrival", depart: "Overnight", timezone: "PDT (UTC-7)", portType: "Hotel / Terminal", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&auto=format&fit=crop",
+                activity: "Parents arrive in Los Angeles! Today is all about getting settled, resting up, and preparing for embarkation tomorrow.",
+                tidbits: ["Port of Los Angeles in San Pedro is America's leading seaport.", "The historic Battleship USS Iowa is permanently moored near Pier 87.", "Panama Canal repositioning cruises take 15 to 17 days to reach Florida."],
+                weather: { temp: "72°F", cond: "Sunny & Pleasant", icon: "fa-sun", humidity: "52%", wind: "8 mph" }, mapCoords: { x: 50, y: 60 }
+            },
+            {
+                index: 1, dayNumber: 1, dateStr: "Tue, Oct 13, 2026", title: "Day 1: Embarkation & Sailaway", location: "Los Angeles, California", country: "United States", flag: "🇺🇸", arrive: "Check-in Morning", depart: "4:00 PM", timezone: "PDT (UTC-7)", portType: "Embarkation Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1548574505-5e238690323f?w=800&auto=format&fit=crop",
+                activity: "Official Embarkation Day! Parents board the Norwegian ship at San Pedro terminal. Watching sailaway at 4:00 PM as the vessel heads into the Pacific Ocean.",
+                tidbits: ["Boarding begins midday with mandatory safety drills before setting sail.", "Passes the Vincent Thomas Suspension Bridge and Angel's Gate Lighthouse.", "Sailaway party on the top pool deck with live music."],
+                weather: { temp: "70°F", cond: "Clear & Breezy", icon: "fa-sun", humidity: "58%", wind: "12 mph" }, mapCoords: { x: 50, y: 60 }
+            },
+            {
+                index: 2, dayNumber: 2, dateStr: "Wed, Oct 14, 2026", title: "Day 2: At Sea", location: "Pacific Ocean (Cruising South)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "PDT (UTC-7)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&auto=format&fit=crop",
+                activity: "First full day at sea! Parents relax by the pool, enjoy spa treatments, gourmet specialty dining, and ocean horizons cruising south along Baja California.",
+                tidbits: ["Sea days give passengers time to explore ship amenities and theaters.", "Waters off Baja California are frequented by humpback whales and dolphins.", "Cruising speed is typically around 18 to 21 knots."],
+                weather: { temp: "75°F", cond: "Sunny Skies", icon: "fa-sun", humidity: "62%", wind: "14 mph" }, mapCoords: { x: 80, y: 78 }
+            },
+            {
+                index: 3, dayNumber: 3, dateStr: "Thu, Oct 15, 2026", title: "Day 3: Cabo San Lucas", location: "Cabo San Lucas, Mexico", country: "Mexico", flag: "🇲🇽", arrive: "11:30 AM", depart: "7:00 PM", timezone: "MDT (UTC-6)", portType: "Tender Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1512813195386-6cf811ad3542?w=800&auto=format&fit=crop",
+                activity: "Docking in Cabo at the tip of Baja Peninsula! Tender boats take passengers ashore to see El Arco (Land's End) and coastal taco tasting.",
+                tidbits: ["El Arco is a 200-foot granite rock formation where Pacific meets Sea of Cortez.", "Cabo San Lucas was originally a quiet fishing village.", "Passengers ride tender water taxis from ship to harbor."],
+                weather: { temp: "86°F", cond: "Hot & Sunny", icon: "fa-sun", humidity: "65%", wind: "9 mph" }, mapCoords: { x: 110, y: 95 }
+            },
+            {
+                index: 4, dayNumber: 4, dateStr: "Fri, Oct 16, 2026", title: "Day 4: At Sea", location: "Pacific Ocean (Mexican Riviera)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&auto=format&fit=crop",
+                activity: "Relaxing day at sea sailing along southern Mexico. Enjoying deck chairs, trivia, live theater performances, and main dining room courses.",
+                tidbits: ["Enters warmer tropical ocean currents today near Acapulco.", "Cruise ships produce millions of gallons of fresh water daily.", "Sunsets over the Pacific are a highlight of Mexican Riviera sailing."],
+                weather: { temp: "84°F", cond: "Partly Cloudy", icon: "fa-cloud-sun", humidity: "70%", wind: "11 mph" }, mapCoords: { x: 135, y: 118 }
+            },
+            {
+                index: 5, dayNumber: 5, dateStr: "Sat, Oct 17, 2026", title: "Day 5: Acapulco", location: "Acapulco, Mexico", country: "Mexico", flag: "🇲🇽", arrive: "7:30 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1568402102990-bc541580b59f?w=800&auto=format&fit=crop",
+                activity: "Visiting iconic Acapulco! Parents watch the famous La Quebrada cliff divers leap from 115-foot cliffs into narrow ocean coves and explore Fort San Diego.",
+                tidbits: ["La Quebrada cliff divers have been performing synchronized leaps since 1934.", "Fort San Diego was constructed in 1616 against pirate attacks.", "Hollywood's favorite glam getaway in the 1950s."],
+                weather: { temp: "88°F", cond: "Tropical Heat", icon: "fa-sun", humidity: "75%", wind: "7 mph" }, mapCoords: { x: 160, y: 140 }
+            },
+            {
+                index: 6, dayNumber: 6, dateStr: "Sun, Oct 18, 2026", title: "Day 6: At Sea", location: "Pacific Ocean (Gulf of Tehuantepec)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1498084393753-b411b2d26b34?w=800&auto=format&fit=crop",
+                activity: "Cruising south across Central America. A smooth day on board with cooking demonstrations, live music, and evening cocktail lounges.",
+                tidbits: ["Gulf of Tehuantepec is known for strong offshore winds across narrow land gaps.", "Cruise directors host special Panama Canal preview lectures.", "Evening theater features Broadway-style musical revues."],
+                weather: { temp: "85°F", cond: "Warm & Tropical", icon: "fa-sun", humidity: "72%", wind: "15 mph" }, mapCoords: { x: 185, y: 158 }
+            },
+            {
+                index: 7, dayNumber: 7, dateStr: "Mon, Oct 19, 2026", title: "Day 7: Puerto Quetzal", location: "Puerto Quetzal, Guatemala", country: "Guatemala", flag: "🇬🇹", arrive: "7:00 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&auto=format&fit=crop",
+                activity: "Arrival in Guatemala! Excursions head inland to UNESCO site Antigua, famous for cobble streets, Spanish colonial architecture, active volcano views, and coffee farms.",
+                tidbits: ["Antigua is surrounded by three towering volcanoes: Agua, Fuego, and Acatenango.", "Guatemalan coffee in volcanic soil is renowned worldwide.", "Puerto Quetzal is Guatemala's main Pacific cruise port."],
+                weather: { temp: "83°F", cond: "Humid & Sun", icon: "fa-cloud-sun", humidity: "78%", wind: "8 mph" }, mapCoords: { x: 210, y: 175 }
+            },
+            {
+                index: 8, dayNumber: 8, dateStr: "Tue, Oct 20, 2026", title: "Day 8: At Sea", location: "Pacific Ocean (Central America)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "CST (UTC-6)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
+                activity: "Halfway point of the voyage! Pool deck relaxation, bingo games, art auctions, and specialty dining as the ship skirts El Salvador and Nicaragua.",
+                tidbits: ["Halfway point typically features gala night or captain's dinner events.", "Bioluminescent plankton sometimes glows blue in ship's wake.", "Crew onboard represent over 50 different nationalities."],
+                weather: { temp: "86°F", cond: "Sunny with Clouds", icon: "fa-cloud-sun", humidity: "74%", wind: "10 mph" }, mapCoords: { x: 235, y: 192 }
+            },
+            {
+                index: 9, dayNumber: 9, dateStr: "Wed, Oct 21, 2026", title: "Day 9: Puntarenas", location: "Puntarenas, Costa Rica", country: "Costa Rica", flag: "🇨🇷", arrive: "7:00 AM", depart: "6:00 PM", timezone: "CST (UTC-6)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1518259102261-b40117eabbc9?w=800&auto=format&fit=crop",
+                activity: "Eco-adventure day in Costa Rica! Exploring cloud forests, aerial tramways, macaw sanctuaries, and Tarcoles River crocodile boat safaris.",
+                tidbits: ["Costa Rica holds nearly 6% of the world's total biodiversity.", "Tarcoles River has one of the world's highest crocodile concentrations.", "'Pura Vida' is the national motto and greeting."],
+                weather: { temp: "84°F", cond: "Tropical Humid", icon: "fa-cloud-sun", humidity: "82%", wind: "6 mph" }, mapCoords: { x: 260, y: 210 }
+            },
+            {
+                index: 10, dayNumber: 10, dateStr: "Thu, Oct 22, 2026", title: "Day 10: At Sea", location: "Gulf of Panama", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EST (UTC-5)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop",
+                activity: "Anticipation builds for the Panama Canal transit tomorrow! Guest historians host theater lectures detailing canal engineering and lock operations.",
+                tidbits: ["Time zone shifts to Eastern Standard Time (EST) today.", "Ships coordinate precise transit slot timing with local canal pilots.", "Over 13,000 vessels transit the canal annually."],
+                weather: { temp: "87°F", cond: "Warm Humid Breeze", icon: "fa-sun", humidity: "76%", wind: "11 mph" }, mapCoords: { x: 285, y: 225 }
+            },
+            {
+                index: 11, dayNumber: 11, dateStr: "Fri, Oct 23, 2026", title: "Day 11: Panama City", location: "Panama City, Panama", country: "Panama", flag: "🇵🇦", arrive: "7:00 AM", depart: "9:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1588821382900-52cb23215be1?w=800&auto=format&fit=crop",
+                activity: "Docked at Panama City! Touring historic Casco Viejo (old town), seeing the futuristic skyline, strolling Amador Causeway, and viewing Bridge of the Americas.",
+                tidbits: ["Panama City is the only capital with a tropical rainforest within city limits.", "Casco Viejo features French and Spanish colonial streets from 1673.", "Bridge of the Americas spans the Pacific entrance to the canal."],
+                weather: { temp: "88°F", cond: "Partly Cloudy", icon: "fa-cloud-sun", humidity: "80%", wind: "7 mph" }, mapCoords: { x: 310, y: 240 }
+            },
+            {
+                index: 12, dayNumber: 12, dateStr: "Sat, Oct 24, 2026", title: "Day 12: Panama Canal Transit", location: "Panama Canal Locks", country: "Panama", flag: "🇵🇦", arrive: "Early AM", depart: "Late PM", timezone: "EST (UTC-5)", portType: "Canal Transit", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1565031491910-e57fac031c41?w=800&auto=format&fit=crop",
+                activity: "CROWN JEWEL DAY! All-day daylight transit through the Panama Canal. Raising through Miraflores and Pedro Miguel locks, crossing Gatun Lake, and descending into the Caribbean Sea!",
+                tidbits: ["Lifts 100,000-ton cruise ships 85 feet above sea level using gravity water.", "Electric 'mule' locomotives pull and stabilize ships in lock chambers.", "Takes 52 million gallons of fresh water for every single ship transit."],
+                weather: { temp: "86°F", cond: "Tropical Humid & Sun", icon: "fa-sun", humidity: "85%", wind: "5 mph" }, mapCoords: { x: 340, y: 230 }
+            },
+            {
+                index: 13, dayNumber: 13, dateStr: "Sun, Oct 25, 2026", title: "Day 13: Cartagena", location: "Cartagena, Colombia", country: "Colombia", flag: "🇨🇴", arrive: "10:15 AM", depart: "6:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1583531172005-814191b8b6c0?w=800&auto=format&fit=crop",
+                activity: "Sailing into the Caribbean! Docking in Cartagena, Colombia. Exploring the vibrant Walled City, painted bougainvillea balconies, and massive Castillo San Felipe fortress.",
+                tidbits: ["Cartagena's Old City wall is 8 miles long and took 200 years to build.", "Castillo San Felipe is the largest Spanish fortress in South America.", "Port terminal features an open-air wildlife garden with flamingos."],
+                weather: { temp: "87°F", cond: "Warm Caribbean Sun", icon: "fa-sun", humidity: "78%", wind: "10 mph" }, mapCoords: { x: 380, y: 210 }
+            },
+            {
+                index: 14, dayNumber: 14, dateStr: "Mon, Oct 26, 2026", title: "Day 14: At Sea", location: "Caribbean Sea (Heading North)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EST (UTC-5)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop",
+                activity: "Cruising turquoise Caribbean waters towards Jamaica. Relaxation day on deck, swimming, evening comedy shows, and Caribbean deck party buffets.",
+                tidbits: ["Caribbean Sea covers roughly 1.06 million square miles.", "Flying fish are frequently spotted skimming across ocean waves.", "Ship cooks prepare fresh tropical fruits and Caribbean seafood."],
+                weather: { temp: "85°F", cond: "Sunny Breeze", icon: "fa-sun", humidity: "72%", wind: "12 mph" }, mapCoords: { x: 395, y: 180 }
+            },
+            {
+                index: 15, dayNumber: 15, dateStr: "Tue, Oct 27, 2026", title: "Day 15: Falmouth", location: "Falmouth, Jamaica", country: "Jamaica", flag: "🇯🇲", arrive: "7:00 AM", depart: "3:00 PM", timezone: "EST (UTC-5)", portType: "Docked Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1557129604-0e50f1300f17?w=800&auto=format&fit=crop",
+                activity: "Island stop in Jamaica! Touring historic Georgian town squares, visiting Dunn's River Falls, sampling authentic Jamaican jerk chicken, and listening to reggae steel drums.",
+                tidbits: ["Falmouth features one of the Caribbean's best-preserved Georgian towns.", "Jamaica was the first commercial banana producer in the Western Hemisphere.", "Authentic jerk spices feature Scotch bonnet peppers and allspice."],
+                weather: { temp: "86°F", cond: "Tropical Sunshine", icon: "fa-sun", humidity: "76%", wind: "9 mph" }, mapCoords: { x: 410, y: 150 }
+            },
+            {
+                index: 16, dayNumber: 16, dateStr: "Wed, Oct 28, 2026", title: "Day 16: At Sea", location: "Straits of Florida (Final Sea Day)", country: "At Sea", flag: "🌊", arrive: "--", depart: "--", timezone: "EDT (UTC-4)", portType: "Cruising Day", isAtSea: true,
+                image: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop",
+                activity: "Final full day of the cruise! Packing suitcases, farewell dinners with newly made friends, crew applause, and watching sunset over the Gulf Stream.",
+                tidbits: ["Passengers put labeled luggage outside staterooms by midnight.", "Gulf Stream current speeds northbound ships toward Florida.", "Cruisers receive debarkation group color tags today."],
+                weather: { temp: "81°F", cond: "Clear Coastal Sky", icon: "fa-sun", humidity: "68%", wind: "13 mph" }, mapCoords: { x: 435, y: 120 }
+            },
+            {
+                index: 17, dayNumber: 17, dateStr: "Thu, Oct 29, 2026", title: "Disembarkation Day", location: "Miami, Florida", country: "United States", flag: "🇺🇸", arrive: "8:00 AM", depart: "Debark", timezone: "EDT (UTC-4)", portType: "Disembark Port", isAtSea: false,
+                image: "https://images.unsplash.com/photo-1506966953602-c20cc11f75e3?w=800&auto=format&fit=crop",
+                activity: "Arrival at PortMiami! Ship docks at 8:00 AM. Clearing customs and heading home with unforgettable 16-day Panama Canal voyage memories!",
+                tidbits: ["PortMiami is known as the 'Cruise Capital of the World'.", "South Beach Art Deco district is located 10 minutes from cruise terminals.", "Traveled over 4,500 nautical miles from California to Florida!"],
+                weather: { temp: "80°F", cond: "Sunny Florida Morning", icon: "fa-sun", humidity: "65%", wind: "10 mph" }, mapCoords: { x: 460, y: 90 }
+            }
         ];
 
-        let activeIdx = 0;
+        let activeIndex = 0;
 
-        function init() {
-            renderTimeline();
-            selectDay(0);
+        const timelineContainer = document.getElementById('timelineContainer');
+        const heroTitle = document.getElementById('heroTitle');
+        const heroSub = document.getElementById('heroSub');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const headerStatusText = document.getElementById('headerStatusText');
+        const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+
+        const dayImage = document.getElementById('dayImage');
+        const dayBadge = document.getElementById('dayBadge');
+        const flagBadge = document.getElementById('flagBadge');
+        const portName = document.getElementById('portName');
+        const portDate = document.getElementById('portDate');
+
+        const arriveTime = document.getElementById('arriveTime');
+        const departTime = document.getElementById('departTime');
+        const timeZoneText = document.getElementById('timeZoneText');
+        const typeText = document.getElementById('typeText');
+
+        const activityText = document.getElementById('activityText');
+        const tidbitsList = document.getElementById('tidbitsList');
+
+        const weatherTemp = document.getElementById('weatherTemp');
+        const weatherCond = document.getElementById('weatherCond');
+        const weatherIconContainer = document.getElementById('weatherIconContainer');
+        const humidityText = document.getElementById('humidityText');
+        const windText = document.getElementById('windText');
+
+        const activePinG = document.getElementById('activePinG');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function initApp() {
+            renderTimelineButtons();
+            selectDayByIndex(0);
         }
 
-        function renderTimeline() {
-            const container = document.getElementById('timeline');
-            container.innerHTML = '';
-            itinerary.forEach((item, i) => {
+        function renderTimelineButtons() {
+            timelineContainer.innerHTML = '';
+            itinerary.forEach((item, idx) => {
                 const btn = document.createElement('button');
-                btn.className = `timeline-btn ${i === activeIdx ? 'active' : ''}`;
-                btn.onclick = () => selectDay(i);
-                btn.innerHTML = `<div>${item.dayNumber === 0 ? 'Oct 12' : 'Day ' + item.dayNumber}</div><div style="font-size: 0.65rem; opacity: 0.8;">${item.isAtSea ? 'Sea' : item.location.split(',')[0]}</div>`;
-                container.appendChild(btn);
+                btn.onclick = () => selectDayByIndex(idx);
+                btn.className = `px-3 py-2 rounded-xl text-xs font-semibold shrink-0 transition flex flex-col items-center min-w-[70px] border ${
+                    idx === activeIndex 
+                    ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-bold shadow-md shadow-cyan-500/20' 
+                    : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:bg-slate-800 hover:border-slate-700'
+                }`;
+
+                const label = item.dayNumber === 0 ? 'Oct 12' : `Day ${item.dayNumber}`;
+                const subLabel = item.isAtSea ? 'Sea' : item.location.split(',')[0];
+
+                btn.innerHTML = `
+                    <span class="text-[10px] opacity-75 uppercase">${label}</span>
+                    <span class="truncate max-w-[65px] font-bold">${subLabel}</span>
+                `;
+                timelineContainer.appendChild(btn);
             });
         }
 
-        function selectDay(i) {
-            activeIdx = i;
-            const item = itinerary[i];
+        function selectDayByIndex(idx) {
+            if (idx < 0 || idx >= itinerary.length) return;
+            activeIndex = idx;
 
-            const pct = Math.min(100, Math.max(0, Math.round((item.dayNumber / 16) * 100)));
-            document.getElementById('progressBar').style.width = pct + '%';
-            document.getElementById('progressPct').innerText = pct + '%';
+            const item = itinerary[idx];
+            const progressPct = Math.round((item.dayNumber / 16) * 100);
+            const clampedProgress = Math.min(Math.max(progressPct, 0), 100);
+            
+            progressBar.style.width = clampedProgress + '%';
+            progressText.innerText = clampedProgress + '%';
 
-            document.getElementById('heroTitle').innerText = item.title;
-            document.getElementById('heroSub').innerText = item.dayNumber === 0 ? "Parents arrive in Los Angeles, preparing for tomorrow's embarkation!" : item.location;
-            document.getElementById('statusBadge').innerText = item.dayNumber === 0 ? "Pre-Cruise Day (Los Angeles)" : `Day ${item.dayNumber} of 16 • ${item.location.split(',')[0]}`;
-
-            document.getElementById('portEmoji').innerText = item.emoji;
-            document.getElementById('portLocationSub').innerText = item.location;
-            document.getElementById('portName').innerText = item.location;
-            document.getElementById('portDate').innerText = item.dateStr;
-            document.getElementById('dayTag').innerText = item.dayNumber === 0 ? "PRE-CRUISE" : `DAY ${item.dayNumber}`;
-            document.getElementById('flagTag').innerText = `${item.flag} ${item.country}`;
-
-            document.getElementById('arriveTime').innerText = item.arrive;
-            document.getElementById('departTime').innerText = item.depart;
-            document.getElementById('tzText').innerText = item.timezone;
-            document.getElementById('typeText').innerText = item.portType;
-
-            document.getElementById('activityText').innerText = item.activity;
-
-            const list = document.getElementById('tidbitsList');
-            list.innerHTML = '';
-            item.tidbits.forEach(t => {
-                const li = document.createElement('li');
-                li.innerText = t;
-                list.appendChild(li);
-            });
-
-            document.getElementById('weatherTemp').innerText = item.weather.temp;
-            document.getElementById('weatherCond').innerText = item.weather.cond;
-            document.getElementById('humidityText').innerText = item.weather.humidity;
-            document.getElementById('windText').innerText = item.weather.wind;
-
-            if (item.mapCoords) {
-                document.getElementById('activePin').setAttribute('transform', `translate(${item.mapCoords.x}, ${item.mapCoords.y})`);
+            if (item.dayNumber === 0) {
+                heroTitle.innerText = "Pre-Cruise Arrival Day";
+                heroSub.innerText = "Parents are resting in Los Angeles today! The 16-day cruise officially embarks TOMORROW (Tue, Oct 13).";
+                headerStatusText.innerText = "Pre-Cruise Day (LA)";
+                dayBadge.innerText = "PRE-CRUISE";
+                dayBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 uppercase tracking-wider shadow-md";
+            } else if (item.dayNumber === 17) {
+                heroTitle.innerText = "Disembarkation & Return Home";
+                heroSub.innerText = "Arrival in Miami! Voyage complete. Flights back home today.";
+                headerStatusText.innerText = "Voyage Completed";
+                dayBadge.innerText = "ARRIVED MIAMI";
+                dayBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 uppercase tracking-wider shadow-md";
+            } else {
+                heroTitle.innerText = item.title;
+                heroSub.innerText = item.isAtSea ? "Sailing through open waters towards " + getNextPortName(idx) : "Anchored/Docked at " + item.location;
+                headerStatusText.innerText = `Day ${item.dayNumber} of 16 • ${item.location.split(',')[0]}`;
+                dayBadge.innerText = `DAY ${item.dayNumber} OF 16`;
+                dayBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 uppercase tracking-wider shadow-md";
             }
 
-            document.getElementById('prevBtn').disabled = activeIdx === 0;
-            document.getElementById('nextBtn').disabled = activeIdx === itinerary.length - 1;
+            selectedDateDisplay.innerText = item.dateStr;
 
-            renderTimeline();
+            dayImage.src = item.image;
+            flagBadge.innerText = `${item.flag} ${item.country}`;
+            portName.innerText = item.location;
+            portDate.innerHTML = `<i class="fa-regular fa-calendar text-cyan-400"></i> ${item.dateStr}`;
+
+            arriveTime.innerText = item.arrive;
+            departTime.innerText = item.depart;
+            timeZoneText.innerText = item.timezone;
+            typeText.innerText = item.portType;
+
+            activityText.innerText = item.activity;
+
+            tidbitsList.innerHTML = '';
+            item.tidbits.forEach(fact => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-2.5";
+                li.innerHTML = `
+                    <i class="fa-solid fa-circle-check text-cyan-400 text-xs mt-1 shrink-0"></i>
+                    <span>${fact}</span>
+                `;
+                tidbitsList.appendChild(li);
+            });
+
+            weatherTemp.innerText = item.weather.temp;
+            weatherCond.innerText = item.weather.cond;
+            humidityText.innerText = item.weather.humidity;
+            windText.innerText = item.weather.wind;
+            weatherIconContainer.innerHTML = `<i class="fa-solid ${item.weather.icon}"></i>`;
+
+            if (item.mapCoords) {
+                activePinG.setAttribute('transform', `translate(${item.mapCoords.x}, ${item.mapCoords.y})`);
+            }
+
+            prevBtn.disabled = activeIndex === 0;
+            nextBtn.disabled = activeIndex === itinerary.length - 1;
+
+            renderTimelineButtons();
+        }
+
+        function getNextPortName(currentIdx) {
+            for (let i = currentIdx + 1; i < itinerary.length; i++) {
+                if (!itinerary[i].isAtSea) {
+                    return itinerary[i].location.split(',')[0];
+                }
+            }
+            return "Miami";
         }
 
         function navigateDay(delta) {
-            if (activeIdx + delta >= 0 && activeIdx + delta < itinerary.length) {
-                selectDay(activeIdx + delta);
-            }
+            selectDayByIndex(activeIndex + delta);
         }
 
         function jumpToToday() {
-            selectDay(0);
+            selectDayByIndex(0);
         }
 
-        window.onload = init;
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
