@@ -150,8 +150,8 @@
                             <span id="departTime" class="font-bold text-amber-400 text-sm">--</span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
-                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Time Zone</span>
-                            <span id="timeZoneText" class="font-bold text-cyan-400 text-sm">PDT · UTC−7</span><span class="block text-slate-400 text-[10px] uppercase tracking-wider mt-2">Current local time</span><time id="localClock" class="block text-white text-lg font-bold tabular-nums" aria-live="off">--:--:--</time><span id="clockQualifier" class="block text-slate-400 text-[10px] mt-0.5"></span>
+                            <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Ship Time</span>
+                            <time id="localClock" class="block text-cyan-400 text-sm sm:text-base font-bold tabular-nums leading-6" aria-live="off" title="Estimated from the itinerary location. Actual onboard ship time may differ.">--:--:--</time>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-950/50 border border-slate-800/50">
                             <span class="block text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">Port or sea</span>
@@ -277,7 +277,6 @@
            const el=$('localClock');
            if(!el||!item)return;
            el.textContent=new Intl.DateTimeFormat('en-US',{timeZone:locationTimeZones[activeIndex],hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date());
-           $('clockQualifier').textContent=item.isAtSea?'Next-port time reference · actual ship time may differ':'Time now at this location';
         }
         function selectDayByIndex(index, opts={}) {
            if(index<0||index>=itinerary.length) return;
@@ -296,7 +295,6 @@
            $('portDate').textContent=fmtDate(day.date);
            $('arriveTime').textContent=day.arrive;
            $('departTime').textContent=day.depart;
-           $('timeZoneText').textContent=day.timezone;
            updateLocalClock();
            $('typeText').textContent=day.portType;
            $('activityText').textContent=day.activity;
