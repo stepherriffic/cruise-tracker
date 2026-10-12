@@ -219,12 +219,12 @@
                         <h3 class="font-serif font-bold text-lg text-white flex items-center gap-2">
                             <i class="fa-solid fa-cloud-sun text-amber-400"></i> Port Forecast
                         </h3>
-                        <span class="text-xs text-slate-400 font-medium">When available</span>
+                        <span class="text-xs text-slate-400 font-medium">Daily high / low</span>
                     </div>
 
                     <div class="flex items-center justify-between pt-1">
                         <div>
-                            <div id="weatherTemp" class="text-3xl font-extrabold text-white">—</div>
+                            <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Forecast high</div><div id="weatherTemp" class="text-3xl font-extrabold text-white">—</div>
                             <div id="weatherCond" class="text-sm font-medium text-cyan-400 mt-0.5">Waiting for forecast</div>
                         </div>
                         <div id="weatherIconContainer" class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-3xl">
@@ -234,7 +234,7 @@
 
                     <div class="grid grid-cols-2 gap-2 text-xs pt-2">
                         <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                            <span class="text-slate-400 block">Low temperature</span>
+                            <span class="text-slate-400 block">Forecast low</span>
                             <span id="humidityText" class="font-bold text-slate-200">—</span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
@@ -369,32 +369,37 @@
         function navigateDay(diff){selectDayByIndex(activeIndex+diff);}
         function jumpToToday(){selectDayByIndex(getTodayIndex());}
         function initMap(){
+           // Self-contained route view: no map tiles, keys, or external libraries required.
            const el=$('routeMap');
-           if(!window.L){el.innerHTML='<div class="p-5 text-slate-300 text-sm">Map unavailable. The itinerary and port photos still work. Map requires an internet connection.</div>';return;}
-           el.replaceChildren();
-           routeMap=L.map(el,{scrollWheelZoom:false}).setView([17,-94],4);
-           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(routeMap);
-           const waypoints=itinerary.filter(d=>d.lat!=null);
+           const ports=itinerary.filter(d=>d.lat!==null && d.index!==0);
+           const W=760,H=370;
+           const project=(lat,lon)=>[55+(lon+119)*14.7,310-(lat-7)*10.1];
+           const esc=str=>String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
            const route=[];
-           waypoints.forEach((p,i)=>{
-              if(i===0)route.push([p.lat,p.lon]);
-              else if(p.index===13){ // schematic Panama Canal passage, not a GPS track
-                 route.push([8.97,-79.58],[9.12,-79.73],[9.31,-79.91],[p.lat,p.lon]);
-              } else route.push([p.lat,p.lon]);
+           ports.forEach((p,i)=>{
+             if(p.index===13)route.push([8.97,-79.58],[9.12,-79.73],[9.31,-79.91]);
+             route.push([p.lat,p.lon]);
            });
-           L.polyline(route,{color:'#06b6d4',weight:3,opacity:.75,dashArray:'8 6'}).addTo(routeMap);
-           waypoints.forEach(p=>{
-              if(p.index===0)return; // do not stack an extra pre-cruise pin on embarkation
-              const marker=L.circleMarker([p.lat,p.lon],{radius:p.index===12?7:5,color:'#ffffff',weight:1,fillColor:p.index===12?'#f59e0b':'#06b6d4',fillOpacity:.95}).addTo(routeMap);
-              marker.bindTooltip(p.location,{direction:'top'}).on('click',()=>selectDayByIndex(p.index));
-              portMarkers.set(p.index,marker);
+           const poly=route.map(c=>project(c[0],c[1]).map(v=>v.toFixed(1)).join(',')).join(' ');
+           const pins=ports.map(p=>{
+             const [x,y]=project(p.lat,p.lon);
+             const label=p.location.split(',')[0];
+             const align=x>580?'end':'start';
+             const tx=x>580?x-13:x+13;
+             return '<g class="portPin" data-index="'+p.index+'" style="cursor:pointer"><circle cx="'+x+'" cy="'+y+'" r="7" fill="#0891b2" stroke="#e2e8f0" stroke-width="2"/><text x="'+tx+'" y="'+(y-11)+'" text-anchor="'+align+'" fill="#e2e8f0" font-size="11" font-weight="600" paint-order="stroke" stroke="#082f49" stroke-width="4">'+esc(label)+'</text></g>';
+           }).join('');
+           el.innerHTML='<svg aria-label="Schematic geographic voyage route from Los Angeles to Miami with scheduled port markers" role="img" viewBox="0 0 '+W+' '+H+'" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block;background:linear-gradient(135deg,#082f49,#0f172a)"><defs><pattern id="seaGrid" width="65" height="55" patternUnits="userSpaceOnUse"><path d="M65 0H0V55" fill="none" stroke="#164e63" stroke-width=".7"/></pattern></defs><rect width="'+W+'" height="'+H+'" fill="url(#seaGrid)"/><text x="24" y="29" fill="#94a3b8" font-size="13">PACIFIC OCEAN</text><text x="585" y="45" fill="#94a3b8" font-size="13">CARIBBEAN</text><polyline points="'+poly+'" stroke="#22d3ee" stroke-width="3" stroke-dasharray="9 7" fill="none" stroke-linejoin="round"/>'+pins+'<text x="22" y="351" fill="#94a3b8" font-size="11">Approximate geographic route · not actual ship tracking</text></svg>';
+           el.querySelectorAll('.portPin').forEach(pin=>{
+              pin.addEventListener('click',()=>selectDayByIndex(Number(pin.dataset.index),{pan:false}));
            });
-           routeMap.fitBounds(L.latLngBounds(route),{padding:[20,20]});
+           updateMap(activeIndex,false);
         }
         function updateMap(index,pan){
-           if(!routeMap)return;
-           for (const [i, marker] of portMarkers) marker.setStyle({radius:i===index?9:5,fillColor:i===index?'#f59e0b':'#06b6d4'});
-           const day=itinerary[index];if(pan&&day.lat!=null)routeMap.panTo([day.lat,day.lon],{animate:true,duration:.5});
+           const root=$('routeMap');if(!root)return;
+           root.querySelectorAll('.portPin').forEach(node=>{
+             const active=Number(node.dataset.index)===index;
+             const c=node.querySelector('circle');if(c){c.setAttribute('fill',active?'#f59e0b':'#0891b2');c.setAttribute('r',active?'10':'7');}
+           });
         }
         function renderCredits(){
            $('photoCreditsList').replaceChildren();
@@ -417,7 +422,7 @@
            if(day.date<today){resetWeather('The selected date has passed. Historical weather observations are not included.');return;}
            const daysAhead=Math.round((new Date(day.date+'T12:00:00Z')-new Date(today+'T12:00:00Z'))/86400000);
            if(daysAhead>15){resetWeather('This stop is outside the 16-day forecast window. Check again closer to arrival.');return;}
-           $('weatherCond').textContent='Loading forecast…';$('weatherNote').textContent='Fetching a location-based forecast from Open-Meteo. Not ship weather.';
+           $('weatherCond').textContent='Loading forecast…';$('weatherNote').textContent='Checking port forecast…';
            try{
               const tz=day.index===1||day.index===0?'America/Los_Angeles':day.index===3?'America/Mazatlan':day.index===5?'America/Mexico_City':day.index===7?'America/Guatemala':day.index===9?'America/Costa_Rica':day.index===11||day.index===12?'America/Panama':day.index===13?'America/Bogota':day.index===15?'America/Jamaica':'America/New_York';
               const url='https://api.open-meteo.com/v1/forecast?latitude='+day.lat+'&longitude='+day.lon+'&daily=temperature_2m_max,temperature_2m_min,weather_code,wind_speed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=16&timezone='+encodeURIComponent(tz);
@@ -430,7 +435,7 @@
               $('weatherTemp').textContent=Math.round(max)+'°F';$('humidityText').textContent=Math.round(min)+'°F';$('windText').textContent=Math.round(wind)+' mph';
               $('weatherCond').textContent=weatherDescriptions[code]||'Variable conditions';
               $('weatherIconContainer').innerHTML='<i class="fa-solid '+(code>=51?'fa-cloud-rain':code<=1?'fa-sun':'fa-cloud-sun')+'"></i>';
-              $('weatherNote').textContent='Open-Meteo daily forecast for '+day.location+' on '+fmtDate(day.date)+' (high / low). Forecasts can change. Not a shipboard report.';
+              $('weatherNote').textContent='Port forecast · '+fmtDate(day.date)+'. Conditions may change.';
            }catch(e){if(req===weatherRequest)resetWeather('Could not load the Open-Meteo forecast. No placeholder weather is shown.');}
         }
         function initApp(){renderCredits();initMap();selectDayByIndex(getTodayIndex(),{pan:false});setInterval(updateLocalClock,1000);}
