@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Norwegian Bliss | Panama Canal Cruise Tracker</title>
+    <meta name="description" content="Follow the Norwegian Bliss on its 16-night Panama Canal voyage from Los Angeles to Miami, October 13–29, 2026. Explore daily stops, route and ship highlights.">
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Norwegian Bliss Cruise Tracker">
+    <meta property="og:title" content="Norwegian Bliss | Panama Canal Cruise Tracker">
+    <meta property="og:description" content="16 nights, Los Angeles to Miami. Explore the Norwegian Bliss itinerary, destinations and ship. October 13–29, 2026.">
+    <meta property="og:url" content="https://stepherriffic.github.io/cruise-tracker/">
+    <meta property="og:image" content="https://stepherriffic.github.io/cruise-tracker/assets/norwegian-bliss-share.jpg">
+    <meta property="og:image:secure_url" content="https://stepherriffic.github.io/cruise-tracker/assets/norwegian-bliss-share.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Norwegian Bliss cruise ship and Panama Canal voyage, October 13–29, 2026">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Norwegian Bliss | Panama Canal Cruise Tracker">
+    <meta name="twitter:description" content="Follow the 16-night Panama Canal voyage from Los Angeles to Miami.">
+    <meta name="twitter:image" content="https://stepherriffic.github.io/cruise-tracker/assets/norwegian-bliss-share.jpg">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzxZhhxHfZZuYrJPbHZNR0bB9g=" crossorigin="">
@@ -369,37 +388,53 @@
         function navigateDay(diff){selectDayByIndex(activeIndex+diff);}
         function jumpToToday(){selectDayByIndex(getTodayIndex());}
         function initMap(){
-           // Self-contained route view: no map tiles, keys, or external libraries required.
            const el=$('routeMap');
-           const ports=itinerary.filter(d=>d.lat!==null && d.index!==0);
-           const W=760,H=370;
-           const project=(lat,lon)=>[55+(lon+119)*14.7,310-(lat-7)*10.1];
-           const esc=str=>String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+           if(typeof L==='undefined'){
+              el.innerHTML='<p class="p-4 text-sm text-amber-200">The interactive map could not load. Check your connection and refresh.</p>';
+              return;
+           }
+           // Real geographic tiles. This is an approximate itinerary, not AIS ship tracking.
+           routeMap=L.map(el,{scrollWheelZoom:false,zoomControl:true,preferCanvas:true});
+           // Use OpenStreetMap's standard tiles directly: no API key or watermark.
+           L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+              maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+           }).addTo(routeMap);
+           const ports=itinerary.filter(d=>Number.isFinite(d.lat)&&Number.isFinite(d.lon)&&d.index!==0);
            const route=[];
-           ports.forEach((p,i)=>{
-             if(p.index===13)route.push([8.97,-79.58],[9.12,-79.73],[9.31,-79.91]);
-             route.push([p.lat,p.lon]);
+           ports.forEach(p=>{
+              if(p.index===12)route.push([8.97,-79.58]); // Pacific-side Cocolí approach
+              if(p.index===13)route.push([9.31,-79.91]); // Caribbean-side Agua Clara exit
+              route.push([p.lat,p.lon]);
            });
-           const poly=route.map(c=>project(c[0],c[1]).map(v=>v.toFixed(1)).join(',')).join(' ');
-           const pins=ports.map(p=>{
-             const [x,y]=project(p.lat,p.lon);
-             const label=p.location.split(',')[0];
-             const align=x>580?'end':'start';
-             const tx=x>580?x-13:x+13;
-             return '<g class="portPin" data-index="'+p.index+'" style="cursor:pointer"><circle cx="'+x+'" cy="'+y+'" r="7" fill="#0891b2" stroke="#e2e8f0" stroke-width="2"/><text x="'+tx+'" y="'+(y-11)+'" text-anchor="'+align+'" fill="#e2e8f0" font-size="11" font-weight="600" paint-order="stroke" stroke="#082f49" stroke-width="4">'+esc(label)+'</text></g>';
-           }).join('');
-           el.innerHTML='<svg aria-label="Schematic geographic voyage route from Los Angeles to Miami with scheduled port markers" role="img" viewBox="0 0 '+W+' '+H+'" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block;background:linear-gradient(135deg,#082f49,#0f172a)"><defs><pattern id="seaGrid" width="65" height="55" patternUnits="userSpaceOnUse"><path d="M65 0H0V55" fill="none" stroke="#164e63" stroke-width=".7"/></pattern></defs><rect width="'+W+'" height="'+H+'" fill="url(#seaGrid)"/><text x="24" y="29" fill="#94a3b8" font-size="13">PACIFIC OCEAN</text><text x="585" y="45" fill="#94a3b8" font-size="13">CARIBBEAN</text><polyline points="'+poly+'" stroke="#22d3ee" stroke-width="3" stroke-dasharray="9 7" fill="none" stroke-linejoin="round"/>'+pins+'<text x="22" y="351" fill="#94a3b8" font-size="11">Approximate geographic route · not actual ship tracking</text></svg>';
-           el.querySelectorAll('.portPin').forEach(pin=>{
-              pin.addEventListener('click',()=>selectDayByIndex(Number(pin.dataset.index),{pan:false}));
+           // Dark outline keeps the route legible on both sea and land.
+           L.polyline(route,{color:'#082f49',weight:7,opacity:.75,lineJoin:'round',interactive:false}).addTo(routeMap);
+           L.polyline(route,{color:'#06b6d4',weight:3,opacity:1,dashArray:'9 7',lineJoin:'round',interactive:false}).addTo(routeMap);
+           portMarkers.clear();
+           ports.forEach(p=>{
+              const marker=L.circleMarker([p.lat,p.lon],{
+                 radius:7,color:'#fff',weight:2,fillColor:'#0369a1',fillOpacity:1
+              }).addTo(routeMap);
+              marker.bindTooltip('<strong>'+p.title.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</strong><br>'+p.date,{
+                 direction:'top',offset:[0,-8],opacity:.98
+              });
+              marker.on('click',()=>selectDayByIndex(p.index,{pan:false}));
+              portMarkers.set(p.index,marker);
            });
+           routeMap.fitBounds(L.latLngBounds(route),{padding:[24,24],maxZoom:5});
+           requestAnimationFrame(()=>routeMap.invalidateSize());
            updateMap(activeIndex,false);
         }
         function updateMap(index,pan){
-           const root=$('routeMap');if(!root)return;
-           root.querySelectorAll('.portPin').forEach(node=>{
-             const active=Number(node.dataset.index)===index;
-             const c=node.querySelector('circle');if(c){c.setAttribute('fill',active?'#f59e0b':'#0891b2');c.setAttribute('r',active?'10':'7');}
+           if(!routeMap)return;
+           portMarkers.forEach((marker,dayIndex)=>{
+              const active=dayIndex===index;
+              marker.setStyle({radius:active?11:7,color:active?'#fff':'#fff',weight:active?3:2,
+                 fillColor:active?'#f59e0b':'#0369a1',fillOpacity:1});
+              if(active)marker.bringToFront();
            });
+           const selected=portMarkers.get(index);
+           // Keep the full journey framed, including when the selected day is at sea.
+           if(selected&&pan&&routeMap.getZoom()>5)routeMap.panTo(selected.getLatLng());
         }
         function renderCredits(){
            $('photoCreditsList').replaceChildren();
