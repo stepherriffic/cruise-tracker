@@ -124,6 +124,9 @@
             </div>
         </div>
 
+        <!-- A single Leaflet map moves here below voyage progress on mobile. -->
+        <div id="mobileRouteMapSlot" class="lg:hidden"></div>
+
         <!-- ACTIVE DAY DETAILS DISPLAY -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -264,7 +267,8 @@
                     <p id="weatherNote" class="text-xs text-slate-400 leading-relaxed">Forecasts are fetched from Open-Meteo for specific ports, not guessed or prefilled.</p>
                 </div>
 
-                <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-4">
+                <div id="desktopRouteMapSlot" class="hidden lg:block">
+                <div id="voyageMapCard" class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                         <h3 class="font-serif font-bold text-lg text-white flex items-center gap-2">
                             <i class="fa-solid fa-route text-cyan-400"></i> Voyage Route Map
@@ -275,6 +279,7 @@
                     <div id="routeMap" class="relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden" style="height:330px;z-index:1"><p class="text-sm text-slate-400 p-4">Loading scheduled port map…</p></div>
                     <p class="text-xs text-slate-400 leading-relaxed">Map shows scheduled port stops and an approximate connecting route. <strong>Not live ship tracking or exact navigation.</strong> Tap a port marker to view that day.</p>
                     </div>
+                </div>
                 </div>
 
             </div>
@@ -353,7 +358,16 @@
               const name=document.createElement('span');name.className='truncate max-w-[75px] font-bold';name.textContent=item.isAtSea?'Sea':item.location.split(',')[0];
               b.append(label,name);container.appendChild(b);
            });
-           const active=container.children[activeIndex];if(active) active.scrollIntoView({block:'nearest',inline:'nearest'});
+           // Keep the selected day visible inside the horizontal strip only.
+           // scrollIntoView() also scrolls the page vertically and used to jump
+           // users away from the map every time they tapped a port marker.
+           const active=container.children[activeIndex];
+           if(active){
+              const itemRect=active.getBoundingClientRect();
+              const stripRect=container.getBoundingClientRect();
+              const target=container.scrollLeft+(itemRect.left-stripRect.left)-(container.clientWidth-itemRect.width)/2;
+              container.scrollTo({left:Math.max(0,target),behavior:'auto'});
+           }
         }
         let photoRequest=0;
         function showPhoto(day){
@@ -387,6 +401,17 @@
         }
         function navigateDay(diff){selectDayByIndex(activeIndex+diff);}
         function jumpToToday(){selectDayByIndex(getTodayIndex());}
+        // Use one map instance for both layouts; no duplicate tiles or markers.
+        const routeMapBreakpoint=window.matchMedia('(max-width: 1023px)');
+        function positionRouteMap(){
+           const card=$('voyageMapCard');
+           const slot=routeMapBreakpoint.matches?$('mobileRouteMapSlot'):$('desktopRouteMapSlot');
+           if(!card||!slot||card.parentElement===slot)return;
+           slot.appendChild(card);
+           // Leaflet measures its container at initialization and must be told
+           // about the width change when the map moves between layout slots.
+           if(routeMap)requestAnimationFrame(()=>routeMap.invalidateSize({pan:false}));
+        }
         function initMap(){
            const el=$('routeMap');
            if(typeof L==='undefined'){
@@ -475,7 +500,18 @@
               $('weatherNote').textContent='Port forecast · '+fmtDate(day.date)+'. Conditions may change.';
            }catch(e){if(req===weatherRequest)resetWeather('Could not load the Open-Meteo forecast. No placeholder weather is shown.');}
         }
-        function initApp(){renderCredits();initMap();selectDayByIndex(getTodayIndex(),{pan:false});setInterval(updateLocalClock,1000);}
+        function initApp(){
+           renderCredits();
+           positionRouteMap(); // Place before Leaflet measures its container.
+           initMap();
+           selectDayByIndex(getTodayIndex(),{pan:false});
+           if(routeMapBreakpoint.addEventListener){
+              routeMapBreakpoint.addEventListener('change',positionRouteMap);
+           }else{
+              routeMapBreakpoint.addListener(positionRouteMap); // Older Safari.
+           }
+           setInterval(updateLocalClock,1000);
+        }
         document.addEventListener('DOMContentLoaded',initApp);
     </script>
 </body>
